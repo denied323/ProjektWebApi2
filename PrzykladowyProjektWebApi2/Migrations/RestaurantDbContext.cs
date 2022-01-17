@@ -28,8 +28,18 @@ namespace PrzykladowyProjektWebApi2.Migrations
                 .Property(r => r.Name)
                 .IsRequired();
 
+            modelBuilder.Entity<Address>()
+                .Property(r => r.City)
+                .IsRequired()
+                .HasMaxLength(50);
 
-            
+            modelBuilder.Entity<Address>()
+                .Property(r => r.Street)
+                .IsRequired()
+                .HasMaxLength(50);
+
+
+
 
         }
 
