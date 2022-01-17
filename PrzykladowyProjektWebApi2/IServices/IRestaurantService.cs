@@ -14,7 +14,8 @@ namespace PrzykladowyProjektWebApi2.IServices
         RestaurantDto GetById(int id);
         int CreateRestaurant(CreateRestaurantDto dto);
         bool DeleteById(int id);
-        
+        bool EditPartiallyRestaurant(int id, EditPartiallyRestaurantDto dto);
+
 
     }
 }

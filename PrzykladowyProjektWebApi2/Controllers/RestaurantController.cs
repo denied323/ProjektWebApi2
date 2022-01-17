@@ -61,6 +61,20 @@ namespace PrzykladowyProjektWebApi2.Controllers
             return NoContent();
         }
 
+        [HttpPut("{id}")]
+        public ActionResult EditPartiallyRestaurant([FromRoute] int id, [FromBody] EditPartiallyRestaurantDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (_restaurantService.EditPartiallyRestaurant(id, dto) == true)
+            {
+                return Ok();
+            }
+            return NoContent();
+        }
+
 
     }
 }

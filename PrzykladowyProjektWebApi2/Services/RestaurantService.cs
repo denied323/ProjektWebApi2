@@ -45,6 +45,20 @@ namespace PrzykladowyProjektWebApi2.Services
             return true;
         }
 
+        public bool EditPartiallyRestaurant(int id, EditPartiallyRestaurantDto dto)
+        {
+            var restaurant = _context.Restaurants.FirstOrDefault(a => a.Id == id);
+            if(restaurant is not null)
+            {
+                restaurant.Name = dto.Name;
+                restaurant.Description = dto.Description;
+                restaurant.HasDelivery = dto.HasDelivery;
+                _context.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+
         public IEnumerable<RestaurantDto> GetAll()
         {
             var list = _context.Restaurants
