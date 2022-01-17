@@ -12,6 +12,9 @@ namespace PrzykladowyProjektWebApi2.IServices
     {
         IEnumerable<RestaurantDto> GetAll();
         RestaurantDto GetById(int id);
+        int CreateRestaurant(CreateRestaurantDto dto);
+        bool DeleteById(int id);
+        
 
     }
 }

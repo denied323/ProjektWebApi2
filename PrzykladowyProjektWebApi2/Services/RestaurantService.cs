@@ -23,6 +23,28 @@ namespace PrzykladowyProjektWebApi2.Services
             _mapper = mapper;
         }
 
+        public int CreateRestaurant(CreateRestaurantDto dto)
+        {
+            var rest = _mapper.Map<Restaurant>(dto);
+            _context.Restaurants.Add(rest);
+            _context.SaveChanges();
+            return rest.Id;
+        }
+
+        public bool DeleteById(int id)
+        {
+            var restaurant = _context.Restaurants.FirstOrDefault(a => a.Id == id);
+
+            if(restaurant is null)
+            {
+                return false;
+            }
+
+            _context.Remove(restaurant);
+            _context.SaveChanges();
+            return true;
+        }
+
         public IEnumerable<RestaurantDto> GetAll()
         {
             var list = _context.Restaurants
