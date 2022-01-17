@@ -38,6 +38,10 @@ namespace PrzykladowyProjektWebApi2.Migrations
                 .IsRequired()
                 .HasMaxLength(50);
 
+            //modelBuilder.Entity<Restaurant>()
+            //    .HasOne(p => p.Employee)
+            //    .WithMany(b => b.Contracts);
+
 
 
 

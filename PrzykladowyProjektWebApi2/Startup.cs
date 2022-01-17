@@ -40,8 +40,12 @@ namespace PrzykladowyProjektWebApi2
             //seeder:
             services.AddScoped<RestaurantDbSeeder>();
 
+            //automapper:
+            services.AddAutoMapper(this.GetType().Assembly); //przeszuka wszystkie mappery samo
+
             //serwisy:
             services.AddTransient<IWeatherForecastService, WeatherForecastService>();
+            services.AddTransient<IRestaurantService, RestaurantService>();
 
 
         }
@@ -51,7 +55,6 @@ namespace PrzykladowyProjektWebApi2
         {
             //seedowanie danych przyk³adowych
             seeder.Seed(); 
-
 
             if (env.IsDevelopment())
             {
