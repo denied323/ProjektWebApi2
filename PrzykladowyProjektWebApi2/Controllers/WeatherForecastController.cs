@@ -52,39 +52,5 @@ namespace PrzykladowyProjektWebApi2.Controllers
 
 
 
-
-
-
-
-        /*
-
-        /// <summary>
-        /// zwraca wszystko, parametry fromroute i fromquery
-        /// </summary>
-        /// <param name="take"></param>
-        /// <param name="max"></param>
-        /// <returns></returns>
-        [HttpGet("currentDay/{max}")]
-        public IEnumerable<WeatherForecast> Get2([FromQuery]int take, [FromRoute] int max)
-        {
-            return _service.Get();
-        }
-
-        /// <summary>
-        /// Status kody
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult<string> Hello([FromBody]string name)
-        {
-            //HttpContext.Response.StatusCode = 401; //nieatuoryzowany kod
-            //return StatusCode(401, $"Hello {name}");
-            return Unauthorized($"Hello {name}");
-        }
-
-
-        */
-
     }
 }
