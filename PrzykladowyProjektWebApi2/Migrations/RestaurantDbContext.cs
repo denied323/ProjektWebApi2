@@ -13,7 +13,7 @@ namespace PrzykladowyProjektWebApi2.Migrations
             "Server=localhost\\SQLEXPRESS;Database=RestaurantDb;Trusted_Connection=True;";
 
 
-        public DbSet<Restaurant> Restaurant { get; set; }
+        public DbSet<Restaurant> Restaurants { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Dish> Dishes { get; set; }
 
@@ -27,6 +27,9 @@ namespace PrzykladowyProjektWebApi2.Migrations
             modelBuilder.Entity<Dish>()
                 .Property(r => r.Name)
                 .IsRequired();
+
+
+            
 
         }
 

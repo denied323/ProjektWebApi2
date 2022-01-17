@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using PrzykladowyProjektWebApi2.IServices;
+using PrzykladowyProjektWebApi2.Migrations;
 using PrzykladowyProjektWebApi2.Services;
 using System;
 using System.Collections.Generic;
@@ -28,20 +29,30 @@ namespace PrzykladowyProjektWebApi2
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PrzykladowyProjektWebApi2", Version = "v1" });
             });
 
+            //dbContext:
+            services.AddDbContext<RestaurantDbContext>();
+            //seeder:
+            services.AddScoped<RestaurantDbSeeder>();
+
+            //serwisy:
             services.AddTransient<IWeatherForecastService, WeatherForecastService>();
+
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, RestaurantDbSeeder seeder)
         {
+            //seedowanie danych przyk³adowych
+            seeder.Seed(); 
+
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
