@@ -45,8 +45,7 @@ namespace PrzykladowyProjektWebApi2.Controllers
                 return BadRequest();
             }
 
-            var result = _service.Get(count, req.minTemp, req.maxTemp);
-            return Ok(result);
+            return Ok(_service.Get(count, req.minTemp, req.maxTemp));
         }
 
 
