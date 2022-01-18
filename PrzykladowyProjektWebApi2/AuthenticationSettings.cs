@@ -9,7 +9,7 @@ namespace PrzykladowyProjektWebApi2
     {
         public string JwtKey { get; set; }
         public int JwtExpireDays { get; set; }
-        public string JwtIssue { get; set; }
+        public string JwtIssuer { get; set; }
 
     }
 }

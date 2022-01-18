@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PrzykladowyProjektWebApi2.Entities;
 using PrzykladowyProjektWebApi2.IServices;
 using PrzykladowyProjektWebApi2.Models;
@@ -8,6 +9,7 @@ namespace PrzykladowyProjektWebApi2.Controllers
 {
     [ApiController]
     [Route("api/restaurant")]
+    [Authorize]
     public class RestaurantController : ControllerBase
     {
         private readonly IRestaurantService _restaurantService;
@@ -18,6 +20,7 @@ namespace PrzykladowyProjektWebApi2.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<IEnumerable<Restaurant>> GetAll()
         {
             var list = _restaurantService.GetAll();
@@ -29,6 +32,7 @@ namespace PrzykladowyProjektWebApi2.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public ActionResult<Restaurant> GetById([FromRoute] int id)
         {
             var restaurant = _restaurantService.GetById(id);

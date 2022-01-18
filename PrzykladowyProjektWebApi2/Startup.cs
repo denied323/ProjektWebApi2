@@ -37,12 +37,14 @@ namespace PrzykladowyProjektWebApi2
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
+
 
             //autentyfikacja JWT
             var authenticationSettings = new AuthenticationSettings();
-            services.AddSingleton(authenticationSettings);
+
             Configuration.GetSection("Authentication").Bind(authenticationSettings);
+
+            services.AddSingleton(authenticationSettings);
             services.AddAuthentication(option =>
             {
                 option.DefaultAuthenticateScheme = "Bearer";
@@ -50,13 +52,13 @@ namespace PrzykladowyProjektWebApi2
                 option.DefaultChallengeScheme = "Bearer";
             }).AddJwtBearer(cfg =>
             {
-                cfg.RequireHttpsMetadata = false; //nie wymuszamy klientowi https
-                cfg.SaveToken = true; // token powinien zostaæ zapisany po stronie serwera do autentyfikacji
-                cfg.TokenValidationParameters = new TokenValidationParameters // do sprawdzania czy dany token jest poprawny
+                cfg.RequireHttpsMetadata = false;
+                cfg.SaveToken = true;
+                cfg.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidIssuer = authenticationSettings.JwtIssue, // wydawca tokenu
-                    ValidAudience = authenticationSettings.JwtIssue, //jakie podmioty mog¹ u¿ywaæ tokenu (ta sama wartoœæ bo my bêdziemy tylko dla siebie robiæ)
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey)) //klucz wygenerowany po kluczu z appsettings
+                    ValidIssuer = authenticationSettings.JwtIssuer,
+                    ValidAudience = authenticationSettings.JwtIssuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey)),
                 };
             });
 
@@ -99,9 +101,6 @@ namespace PrzykladowyProjektWebApi2
             //seedowanie danych przyk³adowych
             seeder.Seed();
 
-            //autentyfikacja:
-            app.UseAuthentication();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -112,6 +111,9 @@ namespace PrzykladowyProjektWebApi2
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            //autentyfikacja:
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
