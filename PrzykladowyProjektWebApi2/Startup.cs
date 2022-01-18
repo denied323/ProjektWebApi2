@@ -46,6 +46,7 @@ namespace PrzykladowyProjektWebApi2
             //serwisy:
             services.AddTransient<IWeatherForecastService, WeatherForecastService>();
             services.AddTransient<IRestaurantService, RestaurantService>();
+            services.AddTransient<IDishService, DishService>();
 
 
         }

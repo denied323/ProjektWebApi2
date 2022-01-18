@@ -29,7 +29,8 @@ namespace PrzykladowyProjektWebApi2.Profiles
                     }
                     ));
 
-            //CreateMap<EditPartiallyRestaurantDto, Restaurant>();
+            CreateMap<CreateDishDto, Dish>();
+
 
         }
 
