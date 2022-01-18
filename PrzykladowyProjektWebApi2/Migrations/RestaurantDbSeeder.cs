@@ -20,14 +20,47 @@ namespace PrzykladowyProjektWebApi2.Migrations
         {
             if (_dbContext.Database.CanConnect()) //jeżeli może połączyć
             {
-                if(!_dbContext.Restaurants.Any()) //jeżeli nie ma niczego w Restaurant
+                if (!_dbContext.Users.Any())
+                {
+
+                }
+                if (!_dbContext.Roles.Any())
+                {
+                    var roles = GetRoles();
+                    _dbContext.Roles.AddRange(roles);
+                    _dbContext.SaveChanges();
+                }
+
+                if (!_dbContext.Restaurants.Any()) //jeżeli nie ma niczego w Restaurant
                 {
                     var restaurants = GetRestaurants();
                     _dbContext.Restaurants.AddRange(restaurants);
                     _dbContext.SaveChanges();
                 }
+                
+
             }
 
+        }
+
+        private IEnumerable<Role> GetRoles()
+        {
+            var roles = new List<Role>()
+            {
+                new Role()
+                {
+                    Name = "User"
+                },
+                new Role()
+                {
+                    Name = "Manager"
+                },
+                new Role()
+                {
+                    Name = "Administrator"
+                },
+            };
+            return roles;
         }
 
         private IEnumerable<Restaurant> GetRestaurants()
