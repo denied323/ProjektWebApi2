@@ -26,6 +26,23 @@ namespace PrzykladowyProjektWebApi2.Controllers
             return Ok();
         }
 
+        [HttpPost("login")]
+        public ActionResult Login([FromBody] LoginDto dto)
+        {
+            GenerateJwtDto gjd = _accountService.GenerateJwt(dto);
+
+            if(gjd.isUserExist == false)
+            {
+                return NotFound("user not found");
+            }
+            if(gjd.isPasswordGood == false)
+            {
+                return BadRequest("invalid username or password");
+            }
+            return Ok(gjd.Jwt);
+
+        }
+
 
 
     }

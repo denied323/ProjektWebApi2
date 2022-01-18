@@ -1,11 +1,16 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PrzykladowyProjektWebApi2.Entities;
 using PrzykladowyProjektWebApi2.IServices;
 using PrzykladowyProjektWebApi2.Migrations;
 using PrzykladowyProjektWebApi2.Models;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace PrzykladowyProjektWebApi2.Services
@@ -14,10 +19,64 @@ namespace PrzykladowyProjektWebApi2.Services
     {
         private readonly RestaurantDbContext _dbContext;
         private readonly IPasswordHasher<User> _passwordHasher;
-        public AccountService(RestaurantDbContext dbContext, IPasswordHasher<User> passwordHasher)
+        private readonly AuthenticationSettings _authenticationSettings;
+
+        public AccountService(RestaurantDbContext dbContext, IPasswordHasher<User> passwordHasher, AuthenticationSettings authenticationSettings)
         {
             _dbContext = dbContext;
             _passwordHasher = passwordHasher;
+            _authenticationSettings = authenticationSettings;
+        }
+
+        public GenerateJwtDto GenerateJwt(LoginDto dto)
+        {
+            var user = _dbContext.Users
+                .Include(a => a.Role)
+                .FirstOrDefault(a => a.Email == dto.Email);
+            GenerateJwtDto generateJwtDto = new GenerateJwtDto();
+
+            if (user is null)
+            {
+                generateJwtDto.isUserExist = false;
+            }
+            else
+            {
+                generateJwtDto.isUserExist = true;
+
+                var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
+                if(result == PasswordVerificationResult.Failed)
+                {
+                    generateJwtDto.isPasswordGood = false;
+                }
+                else
+                {
+                    generateJwtDto.isPasswordGood = true;
+
+                    var claims = new List<Claim>()
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                        new Claim(ClaimTypes.Name, $"{ user.FirstName} {user.LastName}"),
+                        new Claim(ClaimTypes.Role, $"{ user.Role.Name}"),
+                        new Claim("DateOfBirth", user.DateOfBirth.Value.ToString("yyyy-MM-dd")),
+                        new Claim("Nationalty", user.Nationality)
+                    };
+
+                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.JwtKey));
+                    var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                    var expires = DateTime.Now.AddDays(_authenticationSettings.JwtExpireDays);
+
+                    var token = new JwtSecurityToken(_authenticationSettings.JwtIssue,
+                        _authenticationSettings.JwtIssue,
+                        claims,
+                        expires: expires,
+                        signingCredentials: credentials);
+
+                    var tokenHandler = new JwtSecurityTokenHandler();
+
+                    generateJwtDto.Jwt = tokenHandler.WriteToken(token);
+                }
+            }
+            return generateJwtDto;
         }
 
         public void RegisterUser(RegisterUserDto dto)
@@ -35,6 +94,8 @@ namespace PrzykladowyProjektWebApi2.Services
             _dbContext.Users.Add(newUser);
             _dbContext.SaveChanges();
         }
+
+
 
     }
 }

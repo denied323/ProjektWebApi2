@@ -9,7 +9,7 @@ namespace PrzykladowyProjektWebApi2.IServices
     public interface IAccountService
     {
         void RegisterUser(RegisterUserDto dto);
-
+        GenerateJwtDto GenerateJwt(LoginDto dto);
 
     }
 }

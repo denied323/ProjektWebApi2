@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PrzykladowyProjektWebApi2.Entities;
 using PrzykladowyProjektWebApi2.IServices;
@@ -19,6 +20,7 @@ using PrzykladowyProjektWebApi2.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace PrzykladowyProjektWebApi2
@@ -35,6 +37,31 @@ namespace PrzykladowyProjektWebApi2
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
+
+            //autentyfikacja JWT
+            var authenticationSettings = new AuthenticationSettings();
+            services.AddSingleton(authenticationSettings);
+            Configuration.GetSection("Authentication").Bind(authenticationSettings);
+            services.AddAuthentication(option =>
+            {
+                option.DefaultAuthenticateScheme = "Bearer";
+                option.DefaultScheme = "Bearer";
+                option.DefaultChallengeScheme = "Bearer";
+            }).AddJwtBearer(cfg =>
+            {
+                cfg.RequireHttpsMetadata = false; //nie wymuszamy klientowi https
+                cfg.SaveToken = true; // token powinien zostaæ zapisany po stronie serwera do autentyfikacji
+                cfg.TokenValidationParameters = new TokenValidationParameters // do sprawdzania czy dany token jest poprawny
+                {
+                    ValidIssuer = authenticationSettings.JwtIssue, // wydawca tokenu
+                    ValidAudience = authenticationSettings.JwtIssue, //jakie podmioty mog¹ u¿ywaæ tokenu (ta sama wartoœæ bo my bêdziemy tylko dla siebie robiæ)
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey)) //klucz wygenerowany po kluczu z appsettings
+                };
+            });
+
+
+
             services.AddControllers().AddFluentValidation(); //walidacje
             services.AddSwaggerGen(c =>
             {
@@ -54,6 +81,7 @@ namespace PrzykladowyProjektWebApi2
 
             //walidacje:
             services.AddValidatorsFromAssemblyContaining<RegisterUserDtoValidator>();
+            services.AddValidatorsFromAssemblyContaining<LoginDtoValidator>();
 
             //serwisy:
             services.AddScoped<IWeatherForecastService, WeatherForecastService>();
@@ -69,7 +97,10 @@ namespace PrzykladowyProjektWebApi2
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, RestaurantDbSeeder seeder)
         {
             //seedowanie danych przyk³adowych
-            seeder.Seed(); 
+            seeder.Seed();
+
+            //autentyfikacja:
+            app.UseAuthentication();
 
             if (env.IsDevelopment())
             {
