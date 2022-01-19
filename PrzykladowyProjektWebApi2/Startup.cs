@@ -130,7 +130,7 @@ namespace PrzykladowyProjektWebApi2
 
                     builder.AllowAnyMethod() //mo¿e wys³aæ POST,PUT,DELETE,GET itd.
                         .AllowAnyHeader() //mo¿e wys³aæ headery
-                        .WithOrigins("http://localhost:8080") //domena z której bêdzie dostêp
+                        .WithOrigins(Configuration["AllowedOrigins"]) //domena z której bêdzie dostêp (appsettings)
 
                 );
             });
