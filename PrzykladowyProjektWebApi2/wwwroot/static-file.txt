@@ -1,0 +1,1 @@
+﻿Pliczek static-file.txt

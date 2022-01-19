@@ -140,8 +140,15 @@ namespace PrzykladowyProjektWebApi2
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, RestaurantDbSeeder seeder)
         {
+            //cache
+            app.UseResponseCaching();
+
+            //pliki statyczne:
+            app.UseStaticFiles();
+
             //CORS
             app.UseCors("FrontEndClient");
+
 
             //seedowanie danych przyk³adowych
             seeder.Seed();
