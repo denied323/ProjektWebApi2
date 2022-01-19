@@ -101,6 +101,8 @@ namespace PrzykladowyProjektWebApi2
             //walidacje:
             services.AddValidatorsFromAssemblyContaining<RegisterUserDtoValidator>();
             services.AddValidatorsFromAssemblyContaining<LoginDtoValidator>();
+            services.AddValidatorsFromAssemblyContaining<RestaurantQueryValidator>();
+
 
             //middleware:
             services.AddScoped<ErrorHandlingMiddleware>();

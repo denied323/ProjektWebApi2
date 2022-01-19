@@ -11,6 +11,7 @@ using RestaurantAPI.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -99,6 +100,40 @@ namespace PrzykladowyProjektWebApi2.Services
 
             var listDto = _mapper.Map<List<RestaurantDto>>(list);
             return listDto;
+        }
+
+        public PageResult<RestaurantDto> GetAllPaginated(RestaurantQuery query)
+        {
+            var baseQuery = _context.Restaurants
+                .Include(a => a.Address)
+                .Include(a => a.Dishes)
+                .Where(a => string.IsNullOrEmpty(query.SearchPhrase) || (a.Name.ToLower().Contains(query.SearchPhrase.ToLower()) || a.Description.ToLower().Contains(query.SearchPhrase.ToLower())));
+
+            if(!string.IsNullOrEmpty(query.SortBy))
+            {
+                var columnsSelectors = new Dictionary<string, Expression<Func<Restaurant, object>>> //sprawdzanie po jakiej kolumnie ma sortować
+                {
+                    { nameof(Restaurant.Name), r => r.Name },
+                    { nameof(Restaurant.Description), r => r.Description },
+                    { nameof(Restaurant.Category), r => r.Category }
+                };
+                var selectedColumn = columnsSelectors[query.SortBy];
+
+                baseQuery = query.SortDirection == SortDirection.ASC ? //czy rosnąco czy malejąco
+                    baseQuery.OrderBy(selectedColumn)
+                    : baseQuery.OrderByDescending(selectedColumn);
+            }
+
+            var list = baseQuery
+                .Skip(query.PageSize * (query.PageNumer - 1))
+                .Take(query.PageSize)
+                .ToList();
+
+
+            var listDto = _mapper.Map<List<RestaurantDto>>(list);
+
+            var result = new PageResult<RestaurantDto>(listDto, baseQuery.Count(), query.PageSize, query.PageNumer);
+            return result;
         }
 
         public RestaurantDto GetById(int id)

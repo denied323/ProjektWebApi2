@@ -11,11 +11,15 @@ namespace PrzykladowyProjektWebApi2.IServices
 {
     public interface IRestaurantService
     {
+
+        PageResult<RestaurantDto> GetAllPaginated(RestaurantQuery query);
+
         IEnumerable<RestaurantDto> GetAll();
         RestaurantDto GetById(int id);
         int CreateRestaurant(CreateRestaurantDto dto);
         void DeleteById(int id);
         void UpdateRestaurant(int id, EditPartiallyRestaurantDto dto);
+
 
 
     }

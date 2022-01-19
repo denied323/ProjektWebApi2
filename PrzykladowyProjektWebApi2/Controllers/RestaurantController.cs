@@ -28,7 +28,15 @@ namespace PrzykladowyProjektWebApi2.Controllers
             return Ok(list);
         }
 
-        
+        [HttpGet("Paginated")]
+        [AllowAnonymous]
+        public ActionResult<IEnumerable<Restaurant>> GetAllPaginated([FromQuery] RestaurantQuery query)
+        {
+            var result = _restaurantService.GetAllPaginated(query);
+            return Ok(result);
+        }
+
+
 
 
 
