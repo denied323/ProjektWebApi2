@@ -19,6 +19,7 @@ using PrzykladowyProjektWebApi2.Migrations;
 using PrzykladowyProjektWebApi2.Models;
 using PrzykladowyProjektWebApi2.Models.Validators;
 using PrzykladowyProjektWebApi2.Services;
+using RestaurantAPI.Middleware;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,7 +64,6 @@ namespace PrzykladowyProjektWebApi2
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey)),
                 };
             });
-
             //autoryzacja po w³asnych claimach
             services.AddAuthorization(options =>
             {
@@ -75,8 +75,10 @@ namespace PrzykladowyProjektWebApi2
 
 
 
-            //
+            //walidacje
             services.AddControllers().AddFluentValidation(); //walidacje
+
+            //swagger
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PrzykladowyProjektWebApi2", Version = "v1" });
@@ -97,13 +99,24 @@ namespace PrzykladowyProjektWebApi2
             services.AddValidatorsFromAssemblyContaining<RegisterUserDtoValidator>();
             services.AddValidatorsFromAssemblyContaining<LoginDtoValidator>();
 
+            //middleware:
+            services.AddScoped<ErrorHandlingMiddleware>();
+            services.AddScoped<RequestTimeMiddleware>();
+
+
             //serwisy:
             services.AddScoped<IWeatherForecastService, WeatherForecastService>();
             services.AddScoped<IRestaurantService, RestaurantService>();
             services.AddScoped<IDishService, DishService>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IUserContextService, UserContextService>();
+
+
             
 
+
+            //¿eby mo¿na by³o wstrzykn¹æ httpcontext do serwisu
+            services.AddHttpContextAccessor();
 
         }
 
@@ -119,6 +132,11 @@ namespace PrzykladowyProjektWebApi2
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PrzykladowyProjektWebApi2 v1"));
             }
+
+            //midleware:
+            app.UseMiddleware<ErrorHandlingMiddleware>();
+            app.UseMiddleware<RequestTimeMiddleware>();
+
 
             app.UseHttpsRedirection();
 

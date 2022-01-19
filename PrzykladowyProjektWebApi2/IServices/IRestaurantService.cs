@@ -13,9 +13,9 @@ namespace PrzykladowyProjektWebApi2.IServices
     {
         IEnumerable<RestaurantDto> GetAll();
         RestaurantDto GetById(int id);
-        int CreateRestaurant(CreateRestaurantDto dto, int userId);
-        int DeleteById(int id, ClaimsPrincipal user);
-        int EditPartiallyRestaurant(int id, EditPartiallyRestaurantDto dto, ClaimsPrincipal user);
+        int CreateRestaurant(CreateRestaurantDto dto);
+        void DeleteById(int id);
+        void UpdateRestaurant(int id, EditPartiallyRestaurantDto dto);
 
 
     }

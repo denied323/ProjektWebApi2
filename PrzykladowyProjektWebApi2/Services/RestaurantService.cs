@@ -7,6 +7,7 @@ using PrzykladowyProjektWebApi2.Entities;
 using PrzykladowyProjektWebApi2.IServices;
 using PrzykladowyProjektWebApi2.Migrations;
 using PrzykladowyProjektWebApi2.Models;
+using RestaurantAPI.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,63 +21,73 @@ namespace PrzykladowyProjektWebApi2.Services
         private readonly RestaurantDbContext _context;
         private readonly IMapper _mapper;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IUserContextService _userContextService;
 
-        public RestaurantService(RestaurantDbContext context, IMapper mapper, IAuthorizationService authorizationService)
+        public RestaurantService(RestaurantDbContext context, IMapper mapper, IAuthorizationService authorizationService, IUserContextService userContextService)
         {
             _context = context;
             _mapper = mapper;
             _authorizationService = authorizationService;
+            _userContextService = userContextService;
         }
 
-        public int CreateRestaurant(CreateRestaurantDto dto, int userId)
+        public int CreateRestaurant(CreateRestaurantDto dto)
         {
-            var rest = _mapper.Map<Restaurant>(dto);
-            rest.CreatedById = userId;
+            var restaurant = _mapper.Map<Restaurant>(dto);
 
-            _context.Restaurants.Add(rest);
+            restaurant.CreatedById = _userContextService.GetUserId;
+
+            _context.Restaurants.Add(restaurant);
             _context.SaveChanges();
-            return rest.Id;
+
+            return restaurant.Id;
         }
 
-        public int DeleteById(int id, ClaimsPrincipal user)
+        public void DeleteById(int id)
         {
             var restaurant = _context.Restaurants.FirstOrDefault(a => a.Id == id);
 
             if(restaurant is null)
             {
-                return -2;
+                throw new NotFoundException("Restaurant not found");
             }
-            var authorizationResult = _authorizationService.AuthorizeAsync(user, restaurant, new ResourceOperationRequirement(ResourceOperation.Update)).Result;
+
+            var authorizationResult = _authorizationService
+                .AuthorizeAsync(_userContextService.User, restaurant, new ResourceOperationRequirement(ResourceOperation.Update))
+                .Result;
+            
             if (!authorizationResult.Succeeded)
             {
-                return -1;
+                throw new ForbidException();
             }
 
             _context.Remove(restaurant);
             _context.SaveChanges();
-            return 0;
         }
 
-        public int EditPartiallyRestaurant(int id, EditPartiallyRestaurantDto dto, ClaimsPrincipal user)
+        public void UpdateRestaurant(int id, EditPartiallyRestaurantDto dto)
         {
-            
-
             var restaurant = _context.Restaurants.FirstOrDefault(a => a.Id == id);
-            if(restaurant is not null)
-            {
-                var authorizationResult = _authorizationService.AuthorizeAsync(user, restaurant, new ResourceOperationRequirement(ResourceOperation.Update)).Result;
-                if (!authorizationResult.Succeeded)
-                {
-                    return -1;
-                }
 
-                restaurant.Name = dto.Name;
-                restaurant.Description = dto.Description;
-                restaurant.HasDelivery = dto.HasDelivery;
-                _context.SaveChanges();
-                return 0;
+            if (restaurant is null)
+            {
+                throw new NotFoundException("Restaurant not found");
             }
-            return -2;
+
+            var authorizationResult = _authorizationService
+                .AuthorizeAsync(_userContextService.User, restaurant, new ResourceOperationRequirement(ResourceOperation.Update))
+                .Result;
+
+            if (!authorizationResult.Succeeded)
+            {
+                throw new ForbidException();
+            }
+
+            restaurant.Name = dto.Name;
+            restaurant.Description = dto.Description;
+            restaurant.HasDelivery = dto.HasDelivery;
+
+            _context.SaveChanges();
         }
 
         public IEnumerable<RestaurantDto> GetAll()
@@ -97,6 +108,11 @@ namespace PrzykladowyProjektWebApi2.Services
                 .Include(a => a.Dishes)
                 .FirstOrDefault(a => a.Id == id);
 
+            if (restaurant is null) 
+            { 
+                throw new NotFoundException("Restaurant not found");
+            }
+                
             var restaurantDto = _mapper.Map<RestaurantDto>(restaurant);
             return restaurantDto;
         }

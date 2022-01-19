@@ -25,13 +25,62 @@ namespace PrzykladowyProjektWebApi2.Controllers
         public ActionResult<IEnumerable<Restaurant>> GetAll()
         {
             var list = _restaurantService.GetAll();
-            if (list is null)
-            {
-                return NotFound(list);
-            }
             return Ok(list);
         }
 
+        
+
+        [HttpGet("{id}")]
+        public ActionResult<Restaurant> GetById([FromRoute] int id)
+        {
+            var restaurant = _restaurantService.GetById(id);
+            if (restaurant is null)
+            {
+                return NotFound(restaurant);
+            }
+            return Ok(restaurant);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Administrator,Manager")]
+        public ActionResult CreateRestaurant([FromBody] CreateRestaurantDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var id = _restaurantService.CreateRestaurant(dto);
+            return Created($"/api/restaurant/{id}", null);
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator,Manager")]
+        public ActionResult DeleteById([FromRoute] int id)
+        {
+            _restaurantService.DeleteById(id);
+            return NoContent();
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Administrator,Manager")]
+        public ActionResult UpdateRestaurant([FromRoute] int id, [FromBody] EditPartiallyRestaurantDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _restaurantService.UpdateRestaurant(id, dto);
+            return Ok();
+        }
+
+
+
+
+
+
+
+
+        /*
         [HttpGet("nation")]
         [Authorize(Policy = "HasNationality")]
         public ActionResult<IEnumerable<Restaurant>> GetAllNation()
@@ -55,66 +104,6 @@ namespace PrzykladowyProjektWebApi2.Controllers
             }
             return Ok(list);
         }
-
-        [HttpGet("{id}")]
-        public ActionResult<Restaurant> GetById([FromRoute] int id)
-        {
-            var restaurant = _restaurantService.GetById(id);
-            if (restaurant is null)
-            {
-                return NotFound(restaurant);
-            }
-            return Ok(restaurant);
-        }
-
-        [HttpPost]
-        [Authorize(Roles = "Admin,Manager")]
-        public ActionResult CreateRestaurant([FromBody] CreateRestaurantDto dto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            var userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
-            var id = _restaurantService.CreateRestaurant(dto, userId);
-            return Created($"/api/restaurant/{id}", null);
-        }
-
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin,Manager")]
-        public ActionResult DeleteRestaurant([FromRoute] int id)
-        {
-            var isDeleted = _restaurantService.DeleteById(id, User);
-            if(isDeleted == -2)
-            {
-                return NotFound();
-            }
-            else if(isDeleted == -1)
-            {
-                return Forbid();
-            }
-            return NoContent();
-        }
-
-        [HttpPut("{id}")]
-        [Authorize(Roles = "Admin,Manager")]
-        public ActionResult EditPartiallyRestaurant([FromRoute] int id, [FromBody] EditPartiallyRestaurantDto dto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            if (_restaurantService.EditPartiallyRestaurant(id, dto, User) == -2)
-            {
-                return NotFound();
-            }
-            else if (_restaurantService.EditPartiallyRestaurant(id, dto, User) == -1)
-            {
-                return Forbid();
-            }
-            return Ok();
-        }
-
-
+        */
     }
 }
