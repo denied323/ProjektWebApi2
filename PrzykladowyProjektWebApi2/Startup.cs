@@ -123,11 +123,26 @@ namespace PrzykladowyProjektWebApi2
             //¿eby mo¿na by³o wstrzykn¹æ httpcontext do serwisu
             services.AddHttpContextAccessor();
 
+            //CORS
+            services.AddCors(options =>
+            {
+                options.AddPolicy("FrontEndClient", builder =>
+
+                    builder.AllowAnyMethod() //mo¿e wys³aæ POST,PUT,DELETE,GET itd.
+                        .AllowAnyHeader() //mo¿e wys³aæ headery
+                        .WithOrigins("http://localhost:8080") //domena z której bêdzie dostêp
+
+                );
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, RestaurantDbSeeder seeder)
         {
+            //CORS
+            app.UseCors("FrontEndClient");
+
             //seedowanie danych przyk³adowych
             seeder.Seed();
 
