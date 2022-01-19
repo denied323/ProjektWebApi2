@@ -1,5 +1,6 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PrzykladowyProjektWebApi2.Authorization;
 using PrzykladowyProjektWebApi2.Entities;
 using PrzykladowyProjektWebApi2.IServices;
 using PrzykladowyProjektWebApi2.Migrations;
@@ -62,8 +64,17 @@ namespace PrzykladowyProjektWebApi2
                 };
             });
 
+            //autoryzacja po w³asnych claimach
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("HasNationality", builder => builder.RequireClaim("Nationality", "German", "Polish")); //sprawdza czy jest Nationality (przepuszcza jak jest german lub polish)
+                options.AddPolicy("Atleast20", builder => builder.AddRequirements(new MinimumAgeRequirement(20))); //minimum 20 lat
+            });
+            services.AddScoped<IAuthorizationHandler, MinimumAgeRequirementHandler>(); //minimum 20 lat
 
 
+
+            //
             services.AddControllers().AddFluentValidation(); //walidacje
             services.AddSwaggerGen(c =>
             {

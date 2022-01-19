@@ -31,8 +31,31 @@ namespace PrzykladowyProjektWebApi2.Controllers
             return Ok(list);
         }
 
+        [HttpGet("nation")]
+        [Authorize(Policy = "HasNationality")]
+        public ActionResult<IEnumerable<Restaurant>> GetAllNation()
+        {
+            var list = _restaurantService.GetAll();
+            if (list is null)
+            {
+                return NotFound(list);
+            }
+            return Ok(list);
+        }
+
+        [HttpGet("min20")]
+        [Authorize(Policy = "Atleast20")]
+        public ActionResult<IEnumerable<Restaurant>> GetAllMin20()
+        {
+            var list = _restaurantService.GetAll();
+            if (list is null)
+            {
+                return NotFound(list);
+            }
+            return Ok(list);
+        }
+
         [HttpGet("{id}")]
-        [AllowAnonymous]
         public ActionResult<Restaurant> GetById([FromRoute] int id)
         {
             var restaurant = _restaurantService.GetById(id);
@@ -44,6 +67,7 @@ namespace PrzykladowyProjektWebApi2.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager")]
         public ActionResult CreateRestaurant([FromBody] CreateRestaurantDto dto)
         {
             if (!ModelState.IsValid)
@@ -55,6 +79,7 @@ namespace PrzykladowyProjektWebApi2.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Manager")]
         public ActionResult DeleteRestaurant([FromRoute] int id)
         {
             var isDeleted = _restaurantService.DeleteById(id);
@@ -66,6 +91,7 @@ namespace PrzykladowyProjektWebApi2.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Manager")]
         public ActionResult EditPartiallyRestaurant([FromRoute] int id, [FromBody] EditPartiallyRestaurantDto dto)
         {
             if (!ModelState.IsValid)
