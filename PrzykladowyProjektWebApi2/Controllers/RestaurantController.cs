@@ -28,13 +28,7 @@ namespace PrzykladowyProjektWebApi2.Controllers
             return Ok(list);
         }
 
-        [HttpGet("min2restaurants")]
-        [Authorize(Policy = "CreatedAtleast2Restaurants")]
-        public ActionResult<IEnumerable<Restaurant>> GetAllMin2Restaurants()
-        {
-            var lista = _restaurantService.GetAll();
-            return Ok(lista);
-        }
+        
 
 
 
@@ -86,32 +80,29 @@ namespace PrzykladowyProjektWebApi2.Controllers
 
 
 
+        [HttpGet("min2restaurants")]
+        [Authorize(Policy = "CreatedAtleast2Restaurants")]
+        public ActionResult<IEnumerable<Restaurant>> GetAllMin2Restaurants()
+        {
+            var lista1 = _restaurantService.GetAll();
+            return Ok(lista1);
+        }
 
-
-        /*
         [HttpGet("nation")]
         [Authorize(Policy = "HasNationality")]
         public ActionResult<IEnumerable<Restaurant>> GetAllNation()
         {
-            var list = _restaurantService.GetAll();
-            if (list is null)
-            {
-                return NotFound(list);
-            }
-            return Ok(list);
+            var list2 = _restaurantService.GetAll();
+            return Ok(list2);
         }
 
         [HttpGet("min20")]
         [Authorize(Policy = "Atleast20")]
         public ActionResult<IEnumerable<Restaurant>> GetAllMin20()
         {
-            var list = _restaurantService.GetAll();
-            if (list is null)
-            {
-                return NotFound(list);
-            }
-            return Ok(list);
+            var list3 = _restaurantService.GetAll();
+            return Ok(list3);
         }
-        */
+
     }
 }
