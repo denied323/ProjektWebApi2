@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PrzykladowyProjektWebApi2</name>
+    </assembly>
+    <members>
+        <member name="M:PrzykladowyProjektWebApi2.Controllers.AccountController.RegisterUser(PrzykladowyProjektWebApi2.Models.RegisterUserDto)">
+            <summary>
+            rejestracja
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PrzykladowyProjektWebApi2.Controllers.AccountController.Login(PrzykladowyProjektWebApi2.Models.LoginDto)">
+            <summary>
+            logowanie
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PrzykladowyProjektWebApi2.Controllers.WeatherForecastController.Get(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Przyjmuje 3 parametry: liczbe resultatów, minimalną wartość temperatury, max wartość temeraptury
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:PrzykladowyProjektWebApi2.Controllers.WeatherForecastController.Generate(System.Int32,PrzykladowyProjektWebApi2.Models.TemperatureRequest)">
+            <summary>
+            Parametr: liczba rezultatów, w ciele obiekt z wartością maksymalną i minimalną
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

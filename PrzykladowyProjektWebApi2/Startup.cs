@@ -23,6 +23,7 @@ using RestaurantAPI.Middleware;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -85,6 +86,7 @@ namespace PrzykladowyProjektWebApi2
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PrzykladowyProjektWebApi2", Version = "v1" });
+                c.IncludeXmlComments(System.IO.Directory.GetCurrentDirectory() + @"\SwaggerComments.xml");
             });
 
             //dbContext:
