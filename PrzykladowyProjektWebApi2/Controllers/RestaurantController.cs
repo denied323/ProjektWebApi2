@@ -4,6 +4,7 @@ using PrzykladowyProjektWebApi2.Entities;
 using PrzykladowyProjektWebApi2.IServices;
 using PrzykladowyProjektWebApi2.Models;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace PrzykladowyProjektWebApi2.Controllers
 {
@@ -74,7 +75,8 @@ namespace PrzykladowyProjektWebApi2.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var id = _restaurantService.CreateRestaurant(dto);
+            var userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            var id = _restaurantService.CreateRestaurant(dto, userId);
             return Created($"/api/restaurant/{id}", null);
         }
 
@@ -82,10 +84,14 @@ namespace PrzykladowyProjektWebApi2.Controllers
         [Authorize(Roles = "Admin,Manager")]
         public ActionResult DeleteRestaurant([FromRoute] int id)
         {
-            var isDeleted = _restaurantService.DeleteById(id);
-            if(isDeleted == false)
+            var isDeleted = _restaurantService.DeleteById(id, User);
+            if(isDeleted == -2)
             {
                 return NotFound();
+            }
+            else if(isDeleted == -1)
+            {
+                return Forbid();
             }
             return NoContent();
         }
@@ -98,11 +104,15 @@ namespace PrzykladowyProjektWebApi2.Controllers
             {
                 return BadRequest(ModelState);
             }
-            if (_restaurantService.EditPartiallyRestaurant(id, dto) == true)
+            if (_restaurantService.EditPartiallyRestaurant(id, dto, User) == -2)
             {
-                return Ok();
+                return NotFound();
             }
-            return NoContent();
+            else if (_restaurantService.EditPartiallyRestaurant(id, dto, User) == -1)
+            {
+                return Forbid();
+            }
+            return Ok();
         }
 
 

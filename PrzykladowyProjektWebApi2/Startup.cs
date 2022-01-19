@@ -71,6 +71,7 @@ namespace PrzykladowyProjektWebApi2
                 options.AddPolicy("Atleast20", builder => builder.AddRequirements(new MinimumAgeRequirement(20))); //minimum 20 lat
             });
             services.AddScoped<IAuthorizationHandler, MinimumAgeRequirementHandler>(); //minimum 20 lat
+            services.AddScoped<IAuthorizationHandler, ResourceOperationRequirementHandler>(); //dany u¿ytkownik utworzy³ restauracja
 
 
 
