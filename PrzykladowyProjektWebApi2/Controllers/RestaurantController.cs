@@ -28,7 +28,15 @@ namespace PrzykladowyProjektWebApi2.Controllers
             return Ok(list);
         }
 
-        
+        [HttpGet("min2restaurants")]
+        [Authorize(Policy = "CreatedAtleast2Restaurants")]
+        public ActionResult<IEnumerable<Restaurant>> GetAllMin2Restaurants()
+        {
+            var lista = _restaurantService.GetAll();
+            return Ok(lista);
+        }
+
+
 
         [HttpGet("{id}")]
         public ActionResult<Restaurant> GetById([FromRoute] int id)

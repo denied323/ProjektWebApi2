@@ -64,14 +64,17 @@ namespace PrzykladowyProjektWebApi2
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey)),
                 };
             });
+
             //autoryzacja po w³asnych claimach
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("HasNationality", builder => builder.RequireClaim("Nationality", "German", "Polish")); //sprawdza czy jest Nationality (przepuszcza jak jest german lub polish)
                 options.AddPolicy("Atleast20", builder => builder.AddRequirements(new MinimumAgeRequirement(20))); //minimum 20 lat
+                options.AddPolicy("CreatedAtleast2Restaurants", builder => builder.AddRequirements(new CreatedMultipleRestaurantsRequirement(2))); //min 2 restauracje
             });
             services.AddScoped<IAuthorizationHandler, MinimumAgeRequirementHandler>(); //minimum 20 lat
             services.AddScoped<IAuthorizationHandler, ResourceOperationRequirementHandler>(); //dany u¿ytkownik utworzy³ restauracja
+            services.AddScoped<IAuthorizationHandler, CreatedMultipleRestaurantsRequirementHandler>(); //min 2 restauracje
 
 
 
