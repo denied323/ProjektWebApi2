@@ -87,7 +87,33 @@ namespace PrzykladowyProjektWebApi2
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PrzykladowyProjektWebApi2", Version = "v1" });
                 c.IncludeXmlComments(System.IO.Directory.GetCurrentDirectory() + @"\SwaggerComments.xml");
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Scheme = "bearer",
+                    Description = "Please insert JWT token into field"
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] { }
+                    }
+                });
+                c.OperationFilter<SwaggerFileOperationFilter>();
             });
+            
+
+
 
             //dbContext:
             services.AddDbContext<RestaurantDbContext>();
