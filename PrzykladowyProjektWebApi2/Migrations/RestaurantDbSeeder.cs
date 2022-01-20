@@ -1,4 +1,5 @@
-﻿using PrzykladowyProjektWebApi2.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using PrzykladowyProjektWebApi2.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace PrzykladowyProjektWebApi2.Migrations
     public class RestaurantDbSeeder
     {
 
-        RestaurantDbContext _dbContext;
+        readonly RestaurantDbContext _dbContext;
 
         public RestaurantDbSeeder(RestaurantDbContext dbContext)
         {
@@ -20,10 +21,18 @@ namespace PrzykladowyProjektWebApi2.Migrations
         {
             if (_dbContext.Database.CanConnect()) //jeżeli może połączyć
             {
+                //migracje które nie zostały zaaplikoane:
+                var pendingMigrations = _dbContext.Database.GetPendingMigrations(); 
+                if(pendingMigrations is not null && pendingMigrations.Any())
+                {
+                    _dbContext.Database.Migrate();
+                }
+
+                /*
                 if (!_dbContext.Users.Any())
                 {
 
-                }
+                }*/
                 if (!_dbContext.Roles.Any())
                 {
                     var roles = GetRoles();

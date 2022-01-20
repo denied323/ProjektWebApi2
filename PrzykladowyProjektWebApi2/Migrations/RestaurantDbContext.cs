@@ -10,7 +10,7 @@ namespace PrzykladowyProjektWebApi2.Migrations
     public class RestaurantDbContext : DbContext
     {
         private string _connectionString =
-            "Server=localhost\\SQLEXPRESS;Database=RestaurantDb;Trusted_Connection=True;";
+            "Server=DESKTOP-PL5608Q\\SQLEXPRESS;Database=RestaurantDb;Trusted_Connection=True;";
 
 
         public DbSet<Restaurant> Restaurants { get; set; }
